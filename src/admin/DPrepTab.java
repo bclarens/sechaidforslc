@@ -5,8 +5,14 @@
 package admin;
 
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.awt.List;
+import javafx.scene.control.ListView;
+import java.io.InputStream;
 import java.sql.*;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import utilities.*;
@@ -18,16 +24,15 @@ import utilities.*;
 public class DPrepTab extends javax.swing.JFrame {
     
     String s;
+    String[] temppath;
     sqlcon dbconn = new sqlcon();
     Connection connect = null;
     PreparedStatement state = null;
     ResultSet resset = null;
-    
-   
     /**
      * Creates new form DatasetPreparationPage
      */
-    public DPrepTab() {
+    public DPrepTab(){
         initComponents();
         this.setLocationRelativeTo(null);
         setColor(Panel1, Panel11);
@@ -551,20 +556,40 @@ public class DPrepTab extends javax.swing.JFrame {
     private void btn_browseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_browseActionPerformed
         
         JFileChooser filechooser = new JFileChooser();
-        filechooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        //filechooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        filechooser.setCurrentDirectory(new File("E:\\THESIS\\Dataset"));
         FileNameExtensionFilter filter = new FileNameExtensionFilter("*.IMAGE", "jpg","png");
+        filechooser.setMultiSelectionEnabled(true);
         filechooser.addChoosableFileFilter(filter);
         int result = filechooser.showSaveDialog(null);
-        
+        /*
         if(result == JFileChooser.APPROVE_OPTION){
             File selectedfile = filechooser.getSelectedFile();
             String path = selectedfile.getAbsolutePath();
             labelimg.setText(path);
             imgpreview.setIcon(ResizeImage(path));
             s = path;
+            
         }else if(result == JFileChooser.CANCEL_OPTION){
             System.out.println("No Data");
         }
+       */
+        if(result == JFileChooser.APPROVE_OPTION){
+            File[] selectedfiles = filechooser.getSelectedFiles();
+            temppath = new String[selectedfiles.length];
+            //int i = 0;
+            /*for(File f: selectedfiles){
+                String path = f.getAbsolutePath();
+                temppath[i] = path;
+            }*/
+            for(int i=0; i<selectedfiles.length; i++){
+                String path = selectedfiles[i].getAbsolutePath();
+                temppath[i] = path;
+            }
+        }else if(result == JFileChooser.CANCEL_OPTION){
+            System.out.println("No Data");
+        }
+        
     }//GEN-LAST:event_btn_browseActionPerformed
 
     
@@ -573,7 +598,7 @@ public class DPrepTab extends javax.swing.JFrame {
         extras x = new extras();
         int strint = x.selectcombo(combo_grp.getSelectedItem().toString());
         try{
-            //String query = "INSERT into dataset(img) values(?)";
+            /*
             String query = "INSERT INTO dataset(img, img_grp) VALUES (?,?)";
             state = connect.prepareStatement(query);
             InputStream is = new FileInputStream(new File(s));
@@ -581,6 +606,21 @@ public class DPrepTab extends javax.swing.JFrame {
             state.setInt(2, strint);
             state.executeUpdate();
             JOptionPane.showMessageDialog(null, "Data Inserted");
+            */
+            String query = "INSERT INTO dataset(img, img_grp) VALUES (?,?)";
+            state = connect.prepareStatement(query);
+            for(int i =0; i<temppath.length; i++){
+                InputStream is = new FileInputStream(new File(temppath[i]));
+                state.setBlob(1, is);
+                state.setInt(2, strint);
+                state.executeUpdate();
+                
+                if(state.executeUpdate()==0){
+                    JOptionPane.showMessageDialog(null, "Data Not Inserted");
+                }else{
+                    JOptionPane.showMessageDialog(null, "Data Inserted!");
+                }
+            }
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -610,7 +650,6 @@ public class DPrepTab extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -695,9 +734,4 @@ public class DPrepTab extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField labelimg;
     // End of variables declaration//GEN-END:variables
-
-   /* private ImageIcon format = null;
-    String imgname = null;
-    int s = 0;
-    byte[] person_img = null;*/
 }
