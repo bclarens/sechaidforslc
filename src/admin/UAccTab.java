@@ -7,10 +7,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import utilities.rw_data;
 import utilities.sqlcon;
 
 public class UAccTab extends javax.swing.JFrame {
     sqlcon dbconn = new sqlcon();
+    rw_data wrdata = new rw_data();
     /**
      * Creates new form DatasetPreparationPage
      */
@@ -23,6 +25,7 @@ public class UAccTab extends javax.swing.JFrame {
         reset(Panel4,   Panel44);
         setColor(Panel5,   Panel55);
         showusersintable();
+        label_username.setText(wrdata.readsession(1));
     }
 
     /**
@@ -42,7 +45,7 @@ public class UAccTab extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        label_username = new javax.swing.JLabel();
         NavBar = new javax.swing.JPanel();
         Panel1 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -150,10 +153,10 @@ public class UAccTab extends javax.swing.JFrame {
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Admin Profile.png"))); // NOI18N
         Title.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 50, 60));
 
-        jLabel9.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("John Doe");
-        Title.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
+        label_username.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
+        label_username.setForeground(new java.awt.Color(255, 255, 255));
+        label_username.setText("John Doe");
+        Title.add(label_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
 
         jLayeredPane1.add(Title);
         Title.setBounds(0, 40, 970, 80);
@@ -823,7 +826,6 @@ public class UAccTab extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -831,5 +833,6 @@ public class UAccTab extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel label_username;
     // End of variables declaration//GEN-END:variables
 }

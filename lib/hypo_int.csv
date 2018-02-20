@@ -1,0 +1,5 @@
+Significant Value Range,Result
+p <= 0.01,Accepted
+0.01 < p <= 0.05,Accepted
+0.05 < p <= 0.1,Rejected
+p > 0.1,Rejected

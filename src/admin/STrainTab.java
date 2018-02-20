@@ -6,10 +6,18 @@ package admin;
 
 import java.awt.Color;
 import java.io.File;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import utilities.*;
+import Training.ModelTraining;
+import utilities.combo;
+import utilities.rw_data;
+import utilities.sqlcon;
 /**
  *
  * @author Skylar Gail
@@ -19,6 +27,14 @@ public class STrainTab extends javax.swing.JFrame {
     static final String DB_USER = "root";
     static final String DB_PASSWD = "";
     String s;
+    sqlcon dbconn = new sqlcon();
+    Connection connect = null;
+    PreparedStatement state = null;
+    ResultSet resset = null;
+    ModelTraining model1 = new ModelTraining();
+        
+    
+    rw_data wrdata = new rw_data();
     /**
      * Creates new form DatasetPreparationPage
      */
@@ -30,6 +46,9 @@ public class STrainTab extends javax.swing.JFrame {
         reset(Panel3,   Panel33);
         reset(Panel4,   Panel44);
         reset(Panel5,   Panel55);
+        label_username.setText(wrdata.readsession(1));
+        model1.ModelTrain2(0);
+        plotLabel.setIcon("plotimg\\md1.png");
     }
 
     /**
@@ -49,7 +68,7 @@ public class STrainTab extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        label_username = new javax.swing.JLabel();
         NavBar = new javax.swing.JPanel();
         Panel1 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -80,6 +99,10 @@ public class STrainTab extends javax.swing.JFrame {
         btn_train = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        Summary1 = new javax.swing.JPanel();
+        jPanel11 = new javax.swing.JPanel();
+        plotLabel = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
         Summary = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -94,8 +117,8 @@ public class STrainTab extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
         setUndecorated(true);
+        setResizable(false);
 
         Task.setBackground(new java.awt.Color(191, 191, 191));
 
@@ -150,10 +173,10 @@ public class STrainTab extends javax.swing.JFrame {
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Admin Profile.png"))); // NOI18N
         Title.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 50, 60));
 
-        jLabel9.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("John Doe");
-        Title.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
+        label_username.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
+        label_username.setForeground(new java.awt.Color(255, 255, 255));
+        label_username.setText("John Doe");
+        Title.add(label_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
 
         jLayeredPane1.add(Title);
         Title.setBounds(0, 40, 970, 80);
@@ -163,6 +186,9 @@ public class STrainTab extends javax.swing.JFrame {
 
         Panel1.setBackground(new java.awt.Color(132, 131, 113));
         Panel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel1MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel1MousePressed(evt);
             }
@@ -226,6 +252,9 @@ public class STrainTab extends javax.swing.JFrame {
 
         Panel3.setBackground(new java.awt.Color(93, 91, 87));
         Panel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel3MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel3MousePressed(evt);
             }
@@ -260,6 +289,9 @@ public class STrainTab extends javax.swing.JFrame {
 
         Panel4.setBackground(new java.awt.Color(93, 91, 87));
         Panel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel4MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel4MousePressed(evt);
             }
@@ -342,14 +374,13 @@ public class STrainTab extends javax.swing.JFrame {
         jLabel6.setText("Dataset");
 
         combo_grp.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
-        combo_grp.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Melanoma Dataset", "Nevus Dataset", "Seborrheic Keratosis Dataset", " " }));
+        combo_grp.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Melanoma Dataset (Diameter)", "Nevus Dataset (Diameter)", "Seborrheic Keratosis Dataset (Diameter)", "Melanoma Dataset (Dermoscopic Structure)", "Nevus Dataset (Dermoscopic Structure)", "Seborrheic Keratosis Dataset (Dermoscopic Structure)" }));
         combo_grp.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         btn_browse.setBackground(new java.awt.Color(204, 204, 204));
         btn_browse.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
         btn_browse.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Icon Browse.png"))); // NOI18N
         btn_browse.setText("Browse");
-        btn_browse.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btn_browse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_browseActionPerformed(evt);
@@ -359,7 +390,6 @@ public class STrainTab extends javax.swing.JFrame {
         btn_train.setBackground(new java.awt.Color(255, 179, 123));
         btn_train.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
         btn_train.setText("Start Training");
-        btn_train.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btn_train.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_trainActionPerformed(evt);
@@ -410,6 +440,31 @@ public class STrainTab extends javax.swing.JFrame {
 
         Body.add(Specification, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 700, 110));
 
+        Summary1.setBackground(new java.awt.Color(93, 91, 87));
+        Summary1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jPanel11.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(plotLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+        );
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(plotLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
+        );
+
+        Summary1.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 35, 310, 390));
+
+        jLabel22.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel22.setText("Model");
+        Summary1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, -1));
+
+        Body.add(Summary1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 130, 320, 430));
+
         Summary.setBackground(new java.awt.Color(93, 91, 87));
         Summary.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -421,11 +476,11 @@ public class STrainTab extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Skin Lesion Classification", "Status", "CHAID Model"
+                "ID", "Classification", "Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, true
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -440,21 +495,21 @@ public class STrainTab extends javax.swing.JFrame {
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
         );
 
-        Summary.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 35, 690, 180));
+        Summary.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 35, 360, 180));
 
         jLabel21.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
         jLabel21.setForeground(new java.awt.Color(255, 255, 255));
         jLabel21.setText("Summary");
         Summary.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, -1));
 
-        Body.add(Summary, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 700, 220));
+        Body.add(Summary, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 340, 370, 220));
 
         ImagePrev.setBackground(new java.awt.Color(93, 91, 87));
         ImagePrev.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -470,7 +525,7 @@ public class STrainTab extends javax.swing.JFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -479,14 +534,14 @@ public class STrainTab extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        ImagePrev.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 35, 690, -1));
+        ImagePrev.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 35, 360, -1));
 
         jLabel15.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Evaluation");
         ImagePrev.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 110, -1));
 
-        Body.add(ImagePrev, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 700, 200));
+        Body.add(ImagePrev, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 370, 200));
 
         jLayeredPane1.add(Body);
         Body.setBounds(240, 120, 718, 574);
@@ -548,8 +603,9 @@ public class STrainTab extends javax.swing.JFrame {
 
     private void btn_browseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_browseActionPerformed
         JFileChooser filechooser = new JFileChooser();
-        filechooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        filechooser.setCurrentDirectory(new File("E:\\THESIS\\Dataset"));
         FileNameExtensionFilter filter = new FileNameExtensionFilter("*.IMAGE", "jpg","png");
+        filechooser.setMultiSelectionEnabled(true);
         filechooser.addChoosableFileFilter(filter);
         int result = filechooser.showSaveDialog(null);
         
@@ -563,11 +619,33 @@ public class STrainTab extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_browseActionPerformed
 
     private void btn_trainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_trainActionPerformed
-        extras x = new extras();
-        int strint = x.selectcombo(combo_grp.getSelectedItem().toString());
-        
-        
+        combo x = new combo();
+        //int strint =x.selectcombo_strain(s);
+        int index = x.selectcombo_strain(combo_grp.getSelectedItem().toString());
+        ModelTraining model = new ModelTraining();
+        model.ModelTrain(index, plotLabel);
     }//GEN-LAST:event_btn_trainActionPerformed
+
+    private void Panel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel1MouseClicked
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_Panel1MouseClicked
+
+    private void Panel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel3MouseClicked
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_Panel3MouseClicked
+
+    private void Panel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel4MouseClicked
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_Panel4MouseClicked
+    
+    public ImageIcon ResizeImagecas(byte[] imgpath){
+        ImageIcon myimage = new ImageIcon(imgpath);
+        Image img = myimage.getImage();
+        Image newimg = img.getScaledInstance(imgprevcas.getWidth(), imgprevcas.getHeight(),
+                Image.SCALE_SMOOTH);
+        ImageIcon image = new ImageIcon(newimg);
+        return image;
+    }
     
     void setColor (JPanel a, JPanel b)
     {
@@ -633,6 +711,7 @@ public class STrainTab extends javax.swing.JFrame {
     private javax.swing.JPanel Panel55;
     private javax.swing.JPanel Specification;
     private javax.swing.JPanel Summary;
+    private javax.swing.JPanel Summary1;
     private javax.swing.JPanel Task;
     private javax.swing.JPanel Title;
     private javax.swing.JButton btn_browse;
@@ -652,16 +731,17 @@ public class STrainTab extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel7;
@@ -669,5 +749,7 @@ public class STrainTab extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel label_username;
+    private javax.swing.JLabel plotLabel;
     // End of variables declaration//GEN-END:variables
 }

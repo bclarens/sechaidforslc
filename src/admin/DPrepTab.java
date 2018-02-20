@@ -1,34 +1,36 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package admin;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.awt.List;
-import javafx.scene.control.ListView;
 import java.io.InputStream;
 import java.sql.*;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import utilities.*;
 
-/**
- *
- * @author Skylar Gail
- */
 public class DPrepTab extends javax.swing.JFrame {
-    
     String s;
+    
     String[] temppath;
+    String[] tempimgname;
     sqlcon dbconn = new sqlcon();
     Connection connect = null;
-    PreparedStatement state = null;
+    PreparedStatement pstate = null;
+    Statement state = null;
     ResultSet resset = null;
+    
+    //classes
+    retrieve_str retstr = new retrieve_str();
+    rw_data wrdata = new rw_data();
+    writefeatures tstr  = new writefeatures();
+    checklist chk = new checklist();
+    combo x = new combo();  
+    progressbar progbar = new progressbar();
+   
     /**
      * Creates new form DatasetPreparationPage
      */
@@ -40,6 +42,8 @@ public class DPrepTab extends javax.swing.JFrame {
         reset(Panel3,   Panel33);
         reset(Panel4,   Panel44);
         reset(Panel5,   Panel55);
+        showfeat();
+        label_username.setText(wrdata.readsession(1));
     }
 
     /**
@@ -61,7 +65,7 @@ public class DPrepTab extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        label_username = new javax.swing.JLabel();
         NavBar = new javax.swing.JPanel();
         Panel1 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -89,13 +93,12 @@ public class DPrepTab extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         combo_grp = new javax.swing.JComboBox();
         btn_browse = new javax.swing.JButton();
-        labelimg = new javax.swing.JTextField();
         btn_prepare = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         Summary = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        table_summary = new javax.swing.JTable();
         jLabel21 = new javax.swing.JLabel();
         ImagePrev = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
@@ -159,12 +162,13 @@ public class DPrepTab extends javax.swing.JFrame {
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Admin Profile.png"))); // NOI18N
-        Title.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 50, 60));
+        Title.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 10, 50, 60));
 
-        jLabel9.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("John Doe");
-        Title.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
+        label_username.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
+        label_username.setForeground(new java.awt.Color(255, 255, 255));
+        label_username.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        label_username.setText("John Doe");
+        Title.add(label_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 30, 111, 20));
 
         jLayeredPane1.add(Title);
         Title.setBounds(0, 40, 970, 80);
@@ -203,6 +207,9 @@ public class DPrepTab extends javax.swing.JFrame {
 
         Panel2.setBackground(new java.awt.Color(93, 91, 87));
         Panel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel2MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel2MousePressed(evt);
             }
@@ -237,6 +244,9 @@ public class DPrepTab extends javax.swing.JFrame {
 
         Panel3.setBackground(new java.awt.Color(93, 91, 87));
         Panel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel3MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel3MousePressed(evt);
             }
@@ -271,6 +281,9 @@ public class DPrepTab extends javax.swing.JFrame {
 
         Panel4.setBackground(new java.awt.Color(93, 91, 87));
         Panel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel4MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel4MousePressed(evt);
             }
@@ -306,6 +319,9 @@ public class DPrepTab extends javax.swing.JFrame {
         Panel5.setBackground(new java.awt.Color(93, 91, 87));
         Panel5.setAlignmentX(0.0F);
         Panel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel5MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel5MousePressed(evt);
             }
@@ -353,28 +369,24 @@ public class DPrepTab extends javax.swing.JFrame {
         jLabel6.setText("Dataset Group");
 
         combo_grp.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
-        combo_grp.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Melanoma Dataset", "Nevus Dataset", "Seborrheic Keratosis Dataset", " " }));
+        combo_grp.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Melanoma Dataset (Training)", "Nevus Dataset (Training)", "Seborrheic Keratosis Dataset (Training)", "Melanoma Dataset (Testing)", "Nevus Dataset (Testing)", "Seborrheic Keratosis Dataset (Testing)" }));
         combo_grp.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         btn_browse.setBackground(new java.awt.Color(204, 204, 204));
         btn_browse.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
         btn_browse.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Icon Browse.png"))); // NOI18N
         btn_browse.setText("Browse");
-        btn_browse.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btn_browse.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_browseActionPerformed(evt);
             }
         });
 
-        labelimg.setFont(new java.awt.Font("Lucida Sans", 0, 14)); // NOI18N
-
         btn_prepare.setBackground(new java.awt.Color(30, 144, 255));
         btn_prepare.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
         btn_prepare.setForeground(new java.awt.Color(255, 255, 255));
         btn_prepare.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Icon Prepare.png"))); // NOI18N
         btn_prepare.setText("Prepare");
-        btn_prepare.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btn_prepare.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_prepareActionPerformed(evt);
@@ -386,31 +398,26 @@ public class DPrepTab extends javax.swing.JFrame {
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(labelimg, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_browse, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(combo_grp, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(39, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_browse)
                     .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_prepare, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btn_prepare, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(combo_grp, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(42, 42, 42))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(24, 24, 24)
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(combo_grp, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btn_browse, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(labelimg, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(btn_prepare, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
-                .addGap(22, 22, 22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_browse)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_prepare, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(33, 33, 33))
         );
 
         Specification.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 35, 440, 220));
@@ -427,26 +434,39 @@ public class DPrepTab extends javax.swing.JFrame {
 
         jPanel10.setBackground(new java.awt.Color(255, 255, 255));
 
-        jTable1.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        table_summary.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
+        table_summary.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Skin Lesion Classification", "Annotation"
+                "Image", "Asymmetry (A)", "Border (B)", "Color (C)", "Diameter (D1)", "Dermoscopic Structure (D2)"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setGridColor(new java.awt.Color(93, 91, 87));
-        jTable1.setShowHorizontalLines(false);
-        jScrollPane1.setViewportView(jTable1);
+        table_summary.setGridColor(new java.awt.Color(93, 91, 87));
+        table_summary.setShowHorizontalLines(false);
+        table_summary.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_summaryMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(table_summary);
+        if (table_summary.getColumnModel().getColumnCount() > 0) {
+            table_summary.getColumnModel().getColumn(0).setResizable(false);
+            table_summary.getColumnModel().getColumn(1).setResizable(false);
+            table_summary.getColumnModel().getColumn(2).setResizable(false);
+            table_summary.getColumnModel().getColumn(3).setResizable(false);
+            table_summary.getColumnModel().getColumn(4).setResizable(false);
+            table_summary.getColumnModel().getColumn(5).setResizable(false);
+        }
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -479,7 +499,7 @@ public class DPrepTab extends javax.swing.JFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(imgpreview, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+            .addComponent(imgpreview, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -554,85 +574,248 @@ public class DPrepTab extends javax.swing.JFrame {
     }//GEN-LAST:event_Panel2MousePressed
 
     private void btn_browseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_browseActionPerformed
-        
         JFileChooser filechooser = new JFileChooser();
         //filechooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        filechooser.setCurrentDirectory(new File("E:\\THESIS\\Dataset"));
+        filechooser.setCurrentDirectory(new File("E:\\THESIS\\Dataset - Resized"));
         FileNameExtensionFilter filter = new FileNameExtensionFilter("*.IMAGE", "jpg","png");
         filechooser.setMultiSelectionEnabled(true);
         filechooser.addChoosableFileFilter(filter);
         int result = filechooser.showSaveDialog(null);
-        /*
-        if(result == JFileChooser.APPROVE_OPTION){
-            File selectedfile = filechooser.getSelectedFile();
-            String path = selectedfile.getAbsolutePath();
-            labelimg.setText(path);
-            imgpreview.setIcon(ResizeImage(path));
-            s = path;
-            
-        }else if(result == JFileChooser.CANCEL_OPTION){
-            System.out.println("No Data");
-        }
-       */
+        
         if(result == JFileChooser.APPROVE_OPTION){
             File[] selectedfiles = filechooser.getSelectedFiles();
             temppath = new String[selectedfiles.length];
-            //int i = 0;
-            /*for(File f: selectedfiles){
-                String path = f.getAbsolutePath();
-                temppath[i] = path;
-            }*/
+            tempimgname = new String[selectedfiles.length];
+            
             for(int i=0; i<selectedfiles.length; i++){
-                String path = selectedfiles[i].getAbsolutePath();
-                temppath[i] = path;
+                temppath[i] = selectedfiles[i].getAbsolutePath();       // E:\THESIS\Dataset\sampleimg\S1.jpg    
+                tempimgname[i] = retstr.get_name(temppath[i]);          // S1
             }
         }else if(result == JFileChooser.CANCEL_OPTION){
             System.out.println("No Data");
-        }
-        
+        } 
     }//GEN-LAST:event_btn_browseActionPerformed
-
-    
+ 
     private void btn_prepareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_prepareActionPerformed
-        connect = dbconn.getConnection();
-        extras x = new extras();
-        int strint = x.selectcombo(combo_grp.getSelectedItem().toString());
-        try{
-            /*
-            String query = "INSERT INTO dataset(img, img_grp) VALUES (?,?)";
-            state = connect.prepareStatement(query);
-            InputStream is = new FileInputStream(new File(s));
-            state.setBlob(1, is);
-            state.setInt(2, strint);
-            state.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Data Inserted");
-            */
-            String query = "INSERT INTO dataset(img, img_grp) VALUES (?,?)";
-            state = connect.prepareStatement(query);
-            for(int i =0; i<temppath.length; i++){
-                InputStream is = new FileInputStream(new File(temppath[i]));
-                state.setBlob(1, is);
-                state.setInt(2, strint);
-                state.executeUpdate();
-                
-                if(state.executeUpdate()==0){
-                    JOptionPane.showMessageDialog(null, "Data Not Inserted");
-                }else{
-                    JOptionPane.showMessageDialog(null, "Data Inserted!");
-                }
+        wrdata.cleartempdata();
+        int strint = x.selectcombo_dprep(combo_grp.getSelectedItem().toString());     // retrieve the skin group (0-M;1-N;2-SK)     
+        int grp_id = getgrpid(strint);
+        int purp_id = getpurpid(strint);
+        clear_table();
+        insert_multiple(grp_id, purp_id);
+        tstr.feature_extract(strint);    
+        showfeatfilter(grp_id, purp_id);
+        
+    }//GEN-LAST:event_btn_prepareActionPerformed
+    
+    private void table_summaryMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_summaryMouseClicked
+        int i = table_summary.getSelectedRow();
+        TableModel fmodel = table_summary.getModel();
+        String name = (String)fmodel.getValueAt(i,0);
+        int id = tstr.get_imgid(name);
+        byte[] byteimg = getImgBlob(id);
+        imgpreview.setIcon(ResizeImage(byteimg));
+    }//GEN-LAST:event_table_summaryMouseClicked
+
+    private void Panel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel2MouseClicked
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_Panel2MouseClicked
+
+    private void Panel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel3MouseClicked
+        this.dispose();       // TODO add your handling code here:
+    }//GEN-LAST:event_Panel3MouseClicked
+
+    private void Panel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel4MouseClicked
+        this.dispose();         // TODO add your handling code here:
+    }//GEN-LAST:event_Panel4MouseClicked
+
+    private void Panel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel5MouseClicked
+        this.dispose();         // TODO add your handling code here:
+    }//GEN-LAST:event_Panel5MouseClicked
+    
+    public void insert_multiple(int diag, int pid){
+        for(int i=0; i<temppath.length; i++){
+            String path = temppath[i];
+            String name = tempimgname[i];
+             
+            //check if image exists in the database. 0 - image exists ; 1 - image does not exist
+            if(chk.checkname(name)==0){
+                System.out.println(name+" already exists!");
+            }else if(chk.checkname(name)==1){
+                insert_image(path, name, diag, pid);
+                String featimg = retstr.feat_imgname(path);      // S1.jpg
+                String featdir = retstr.feat_folderpath(path);   // E:\THESIS\Dataset\sampleimg
+                String skngrp = Integer.toString(diag);
+                wrdata.writedata(featimg, featdir, skngrp);      // write filename,filedir to tempdata.txt
+                JOptionPane.showMessageDialog(null, "Data Inserted!");
             }
+        } 
+    }
+    
+    public void insert_image(String path, String name, int strint, int pid){
+        connect = dbconn.getConnection();
+        int result;
+        try{
+            String query = "INSERT INTO dataset(img, img_name, img_grp, purp_id) VALUES (?,?,?,?)";
+            pstate = connect.prepareStatement(query);
+            InputStream is = new FileInputStream(new File(path));
+            pstate.setBlob(1, is);
+            pstate.setString(2, name);
+            pstate.setInt(3, strint);
+            pstate.setInt(4, pid);
+            result = pstate.executeUpdate();
         }catch(Exception ex){
             ex.printStackTrace();
         }
-    }//GEN-LAST:event_btn_prepareActionPerformed
+    }
     
-    public ImageIcon ResizeImage(String imgpath){
+    public ImageIcon ResizeImage(byte[] imgpath){
         ImageIcon myimage = new ImageIcon(imgpath);
         Image img = myimage.getImage();
         Image newimg = img.getScaledInstance(imgpreview.getWidth(), imgpreview.getHeight(),
                 Image.SCALE_SMOOTH);
         ImageIcon image = new ImageIcon(newimg);
         return image;
+    }
+    
+    public void showfeatfilter(int gr, int prp){
+        ArrayList<Feat> flist = featList(gr, prp);
+        DefaultTableModel model = (DefaultTableModel)table_summary.getModel(); 
+         Object[] row = new Object[6];
+         
+         for(int i=0; i<flist.size(); i++){
+             row[0] = flist.get(i).getImgName();
+             row[1] = flist.get(i).getA();
+             row[2] = flist.get(i).getB();
+             row[3] = flist.get(i).getC();
+             row[4] = flist.get(i).getD1();
+             row[5] = flist.get(i).getD2();
+             model.addRow(row); 
+         }
+    }   
+
+    public void showfeat(){
+        ArrayList<Feat> flist = featList2();
+        DefaultTableModel model = (DefaultTableModel)table_summary.getModel(); 
+         Object[] row = new Object[6];
+         
+         for(int i=0; i<flist.size(); i++){
+             row[0] = flist.get(i).getImgName();
+             row[1] = flist.get(i).getA();
+             row[2] = flist.get(i).getB();
+             row[3] = flist.get(i).getC();
+             row[4] = flist.get(i).getD1();
+             row[5] = flist.get(i).getD2();
+             model.addRow(row); 
+         }
+    }
+    
+    public ArrayList<Feat> featList2(){
+        ArrayList<Feat> featList2 = new ArrayList<Feat>();
+        
+        Connection cnct = dbconn.getConnection();
+        Statement state = null;
+        ResultSet resset;
+        
+        try{
+            String sql = "SELECT dataset.img_id, dataset.img_name, data_feat.A, data_feat.B, data_feat.C, data_feat.D1, data_feat.D2 FROM dataset, data_feat WHERE dataset.img_id = data_feat.img_id ORDER BY dataset.img_name DESC";
+            state = cnct.createStatement();
+            resset = state.executeQuery(sql);
+            Feat feat;
+            
+            while(resset.next()){
+                feat = new Feat(resset.getInt("img_id"),resset.getString("img_name"),resset.getInt("A"),resset.getInt("B"),resset.getInt("C"),resset.getInt("D1"),resset.getInt("D2"));
+                featList2.add(feat);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return featList2;
+    }
+    
+    public ArrayList<Feat> featList(int group, int purpose){
+        ArrayList<Feat> featList = new ArrayList<Feat>();
+        
+        Connection cnct = dbconn.getConnection();
+        Statement state = null;
+        ResultSet resset;
+        
+        try{
+            String sql = "SELECT dataset.img_id, dataset.img_name, data_feat.A, data_feat.B, data_feat.C, data_feat.D1, data_feat.D2 FROM dataset, data_feat WHERE dataset.img_id = data_feat.img_id AND dataset.img_grp = "+group+" AND dataset.purp_id = "+purpose+" ORDER BY dataset.img_id DESC";
+            state = cnct.createStatement();
+            resset = state.executeQuery(sql);
+            Feat feat;
+            
+            while(resset.next()){
+                feat = new Feat(resset.getInt("img_id"),resset.getString("img_name"),resset.getInt("A"),resset.getInt("B"),resset.getInt("C"),resset.getInt("D1"),resset.getInt("D2"));
+                featList.add(feat);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return featList;
+    }
+    
+    public byte[] getImgBlob(int idimg){
+        Connection cnct = dbconn.getConnection();
+        PreparedStatement pstate = null;
+        ResultSet resset = null;
+        
+        try{
+            String sql = "SELECT img from dataset WHERE img_id = "+idimg;
+            pstate = cnct.prepareStatement(sql);
+            resset = pstate.executeQuery(sql);
+            
+            while(resset.next()){
+                Blob imgblob = resset.getBlob("img");
+                return imgblob.getBytes(1, (int) imgblob.length());
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public int getgrpid(int choice){
+        switch(choice){
+            case 0: //Melanoma Dataset (Training)
+                return 0;
+            case 1: //Nevus Dataset (Training)
+                return 1;
+            case 2: //Seborrheic Keratosis Dataset (Training)
+                return 2;
+            case 3: //Melanoma Dataset (Testing)
+                return 0;
+            case 4: //Nevus Dataset (Testing)
+                return 1;
+            case 5: //Seborrheic Keratosis Dataset (Testing)
+                return 2;
+        }
+        return -1;
+    }
+    
+    public int getpurpid(int choice){
+        switch(choice){
+            case 0: //Melanoma Dataset (Training)
+                return 0;
+            case 1: //Nevus Dataset (Training)
+                return 0;
+            case 2: //Seborrheic Keratosis Dataset (Training)
+                return 0;
+            case 3: //Melanoma Dataset (Testing)
+                return 1;
+            case 4: //Nevus Dataset (Testing)
+                return 1;
+            case 5: //Seborrheic Keratosis Dataset (Testing)
+                return 1;
+        }
+        return -1;
+    }
+    
+    public void clear_table(){
+        DefaultTableModel model = (DefaultTableModel)table_summary.getModel();
+        model.setRowCount(0);
     }
     
     void setColor (JPanel a, JPanel b)
@@ -651,7 +834,7 @@ public class DPrepTab extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        //<editor-fold defaultpstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
@@ -723,7 +906,6 @@ public class DPrepTab extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -731,7 +913,7 @@ public class DPrepTab extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField labelimg;
+    private javax.swing.JLabel label_username;
+    private javax.swing.JTable table_summary;
     // End of variables declaration//GEN-END:variables
 }

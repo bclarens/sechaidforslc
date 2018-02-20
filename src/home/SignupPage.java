@@ -8,6 +8,7 @@ import static java.awt.image.ImageObserver.WIDTH;
 import java.sql.*;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import utilities.checklist;
 import utilities.sqlcon;
 
 /**
@@ -20,6 +21,7 @@ public class SignupPage extends javax.swing.JFrame {
     static final String DB_PASSWD = "";
     
     sqlcon dbconn = new sqlcon();
+    checklist chk = new checklist();
     /**
      * Creates new form LoginPage
      */
@@ -292,6 +294,21 @@ public class SignupPage extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_cancelActionPerformed
 
     private void btn_signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_signupActionPerformed
+        String input_fname = in_fnameText.getText();
+        String input_lname = in_lnameText.getText();
+        String input_uname = in_unameText.getText();
+        String input_pw = in_pwordText.getText();
+        
+        if(chk.checkuname(input_uname)==0){
+            JOptionPane.showMessageDialog(null, "Username already exists!");
+            in_unameText.setText("");
+            in_pwordText.setText("");
+        }else if(chk.checkuname(input_uname)==1){
+            insertuser(input_fname, input_lname, input_uname, input_pw);
+        }
+    }//GEN-LAST:event_btn_signupActionPerformed
+
+    public void insertuser(String fn, String ln, String un, String pwd){
         Connection connect =  dbconn.getConnection();
         PreparedStatement pstate = null;
         Scanner scan = null;
@@ -299,18 +316,17 @@ public class SignupPage extends javax.swing.JFrame {
         try{
             Class.forName("com.mysql.jdbc.Driver");
             
-            String sql = "INSERT INTO user (f_name, l_name, u_name, password) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO user (f_name, l_name, u_name, password, status_id) VALUES (?, ?, ?, ?, ?)";
             pstate = connect.prepareStatement(sql);
-            pstate.setString(1, in_fnameText.getText());
-            pstate.setString(2, in_lnameText.getText());
-            pstate.setString(3, in_unameText.getText());
-            pstate.setString(4, in_pwordText.getText());
+            pstate.setString(1, fn);
+            pstate.setString(2, ln);
+            pstate.setString(3, un);
+            pstate.setString(4, pwd);
+            pstate.setInt(5, 1);
             pstate.executeUpdate();
             JOptionPane.showMessageDialog(null, "Successfully created an account!");
             new LoginPage().setVisible(true);
-            this.dispose();
-            
-            
+            this.dispose(); 
         }catch(Exception ex){
             ex.printStackTrace();
         }finally{
@@ -325,8 +341,7 @@ public class SignupPage extends javax.swing.JFrame {
             ex.printStackTrace();
             }
         }
-    }//GEN-LAST:event_btn_signupActionPerformed
-
+    }
     /**
      * @param args the command line arguments
      */

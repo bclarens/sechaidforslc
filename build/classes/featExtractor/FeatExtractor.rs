@@ -1,2 +1,0 @@
-featExtractor.FeatExtractor
-FeatureExtractor.FeatExtractor

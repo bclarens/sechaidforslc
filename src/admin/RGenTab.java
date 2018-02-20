@@ -6,13 +6,14 @@ package admin;
 
 import java.awt.Color;
 import javax.swing.JPanel;
+import utilities.rw_data;
 
 /**
  *
  * @author Skylar Gail
  */
 public class RGenTab extends javax.swing.JFrame {
-
+    rw_data wrdata = new rw_data();
     /**
      * Creates new form DatasetPreparationPage
      */
@@ -24,6 +25,7 @@ public class RGenTab extends javax.swing.JFrame {
         reset(Panel3,   Panel33);
         setColor(Panel4,   Panel44);
         reset(Panel5,   Panel55);
+        label_username.setText(wrdata.readsession(1));
     }
 
     /**
@@ -43,7 +45,7 @@ public class RGenTab extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        label_username = new javax.swing.JLabel();
         NavBar = new javax.swing.JPanel();
         Panel1 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -76,8 +78,8 @@ public class RGenTab extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
         setUndecorated(true);
+        setResizable(false);
 
         Task.setBackground(new java.awt.Color(191, 191, 191));
 
@@ -109,8 +111,8 @@ public class RGenTab extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jLayeredPane1.add(Task);
         Task.setBounds(0, 0, 970, 40);
-        jLayeredPane1.add(Task, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         Title.setBackground(new java.awt.Color(93, 91, 87));
         Title.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -132,19 +134,22 @@ public class RGenTab extends javax.swing.JFrame {
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Admin Profile.png"))); // NOI18N
         Title.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 50, 60));
 
-        jLabel9.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("John Doe");
-        Title.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
+        label_username.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
+        label_username.setForeground(new java.awt.Color(255, 255, 255));
+        label_username.setText("John Doe");
+        Title.add(label_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
 
+        jLayeredPane1.add(Title);
         Title.setBounds(0, 40, 970, 80);
-        jLayeredPane1.add(Title, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         NavBar.setBackground(new java.awt.Color(93, 91, 87));
         NavBar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Panel1.setBackground(new java.awt.Color(132, 131, 113));
         Panel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel1MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel1MousePressed(evt);
             }
@@ -179,6 +184,9 @@ public class RGenTab extends javax.swing.JFrame {
 
         Panel2.setBackground(new java.awt.Color(93, 91, 87));
         Panel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel2MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel2MousePressed(evt);
             }
@@ -213,6 +221,9 @@ public class RGenTab extends javax.swing.JFrame {
 
         Panel3.setBackground(new java.awt.Color(93, 91, 87));
         Panel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel3MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel3MousePressed(evt);
             }
@@ -309,8 +320,8 @@ public class RGenTab extends javax.swing.JFrame {
 
         NavBar.add(Panel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 230, 60));
 
+        jLayeredPane1.add(NavBar);
         NavBar.setBounds(0, 120, 240, 580);
-        jLayeredPane1.add(NavBar, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         Body.setBackground(new java.awt.Color(255, 255, 255));
         Body.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -358,8 +369,8 @@ public class RGenTab extends javax.swing.JFrame {
         jButton4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         Body.add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 20, 144, 42));
 
+        jLayeredPane1.add(Body);
         Body.setBounds(240, 120, 718, 574);
-        jLayeredPane1.add(Body, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jPanel2.setBackground(new java.awt.Color(93, 91, 87));
 
@@ -374,13 +385,13 @@ public class RGenTab extends javax.swing.JFrame {
             .addGap(0, 3, Short.MAX_VALUE)
         );
 
+        jLayeredPane1.add(jPanel2);
         jPanel2.setBounds(240, 695, 720, 3);
-        jLayeredPane1.add(jPanel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jPanel1.setBackground(new java.awt.Color(93, 91, 87));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jLayeredPane1.add(jPanel1);
         jPanel1.setBounds(959, 120, 3, 580);
-        jLayeredPane1.add(jPanel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -415,6 +426,18 @@ public class RGenTab extends javax.swing.JFrame {
     private void Panel2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel2MousePressed
         new STrainTab().setVisible(true);
     }//GEN-LAST:event_Panel2MousePressed
+
+    private void Panel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel1MouseClicked
+        this.dispose();
+    }//GEN-LAST:event_Panel1MouseClicked
+
+    private void Panel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel2MouseClicked
+        this.dispose();
+    }//GEN-LAST:event_Panel2MouseClicked
+
+    private void Panel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel3MouseClicked
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_Panel3MouseClicked
 
     
     void setColor (JPanel a, JPanel b)
@@ -500,10 +523,10 @@ public class RGenTab extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JLabel label_username;
     // End of variables declaration//GEN-END:variables
 }

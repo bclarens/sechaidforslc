@@ -8,7 +8,10 @@ import admin.DPrepTab;
 import static java.awt.image.ImageObserver.WIDTH;
 import java.sql.*;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
+import utilities.rw_data;
 import utilities.sqlcon;
+import user.UTesting;
 /**
  *
  * @author Skylar Gail
@@ -16,6 +19,7 @@ import utilities.sqlcon;
 public class LoginPage extends javax.swing.JFrame {
     
     sqlcon dbconn = new sqlcon();
+    rw_data wrdata = new rw_data();
     /**
      * Creates new form LoginPage
      */
@@ -273,6 +277,14 @@ public class LoginPage extends javax.swing.JFrame {
     }//GEN-LAST:event_label_signupMouseClicked
 
     private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
+        String uname = in_unameText.getText();
+        String pw = in_pwordText.getText();
+        
+        //username and password authentication
+        authenticate(uname, pw);
+    }//GEN-LAST:event_btn_loginActionPerformed
+
+    public void authenticate(String in_uname, String in_pwd){
         Connection connect = dbconn.getConnection();
         PreparedStatement state = null;
         ResultSet resset = null;
@@ -280,29 +292,34 @@ public class LoginPage extends javax.swing.JFrame {
         Scanner scan = null;
         
         try{
-            String in_uname = in_unameText.getText();
-            String in_pwd = in_pwordText.getText();
-            
             String sql = "SELECT * from user WHERE u_name = ? and password = ?";
             state = connect.prepareStatement(sql);
             state.setString(1, in_uname);
             state.setString(2, in_pwd);
             resset = state.executeQuery();
-            
-            
+
             int count = 0;
             
             while(resset.next()){
                 count++;
             }
+            
+            //if username and password match with each other
             if(count==1){
-                System.out.println("Logged in!");
-                new DPrepTab().setVisible(true);
-                this.dispose();
+                String userinfo = getuserinfo(in_uname); // jd1,John Doe,1
+                wrdata.writesession(userinfo); //write userinfo to session.txt
+                
+                if((userinfo.substring(userinfo.lastIndexOf(",")+1)).equals("0")){ //if user is admin
+                    new DPrepTab().setVisible(true);
+                    this.dispose();
+                }else if((userinfo.substring(userinfo.lastIndexOf(",")+1)).equals("1")){ //if user is a casual user
+                    new UTesting().setVisible(true);
+                    this.dispose();
+                }  
             }else if(count>1){
                 System.out.println("");
             }else{
-                System.out.println("Incorrect username and password!");
+                JOptionPane.showMessageDialog(null, "Incorrect username and password!");
             }
         }catch(Exception ex){
             ex.printStackTrace();
@@ -319,13 +336,40 @@ public class LoginPage extends javax.swing.JFrame {
              }catch(Exception ex){
             ex.printStackTrace();
             }
+        }  
+    }
+    
+    public String getuserinfo(String un){
+        sqlcon dbconn = new sqlcon();
+        Connection connect = null;
+        PreparedStatement state = null;
+        connect = dbconn.getConnection();
+        ResultSet resset = null;
+        String fn, ln, info, sid, uid;
+        try{
+            String query = "SELECT * FROM user WHERE u_name = ?";
+            state = connect.prepareStatement(query);
+            state.setString(1, un);
+            resset = state.executeQuery();
+            
+            while(resset.next()){
+                uid = Integer.toString(resset.getInt("user_id"));
+                fn = resset.getString("f_name");
+                ln = resset.getString("l_name");
+                sid = Integer.toString(resset.getInt("status_id"));
+                
+                String f1 = Character.toString(fn.toLowerCase().charAt(0));
+                String l1 = Character.toString(ln.toLowerCase().charAt(0));
+                info = f1+l1+uid+","+fn+" "+ln+","+sid;
+                return info;
+            }
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
-   
-        
-        
-        
-    }//GEN-LAST:event_btn_loginActionPerformed
-
+        return "";
+    }
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         System.exit(WIDTH);
     }//GEN-LAST:event_jButton3ActionPerformed

@@ -6,13 +6,19 @@ package admin;
 
 import java.awt.Color;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
+import Testing.ModelTesting;
+import java.util.ArrayList;
+import utilities.combo;
+import utilities.read_int;
+import utilities.rw_data;
 
 /**
  *
  * @author Skylar Gail
  */
 public class STestTab extends javax.swing.JFrame {
-
+    rw_data wrdata = new rw_data();
     /**
      * Creates new form DatasetPreparationPage
      */
@@ -24,6 +30,7 @@ public class STestTab extends javax.swing.JFrame {
         setColor(Panel3,   Panel33);
         reset(Panel4,   Panel44);
         reset(Panel5,   Panel55);
+        label_username.setText(wrdata.readsession(1));
     }
 
     /**
@@ -43,7 +50,7 @@ public class STestTab extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        label_username = new javax.swing.JLabel();
         NavBar = new javax.swing.JPanel();
         Panel1 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -73,7 +80,7 @@ public class STestTab extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
         jButton3 = new javax.swing.JButton();
-        jComboBox2 = new javax.swing.JComboBox();
+        combo_test = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
         Summary = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
@@ -82,15 +89,15 @@ public class STestTab extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         ImagePrev = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        interpretationTable = new javax.swing.JTable();
         jLabel15 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
         setUndecorated(true);
+        setResizable(false);
 
         Task.setBackground(new java.awt.Color(191, 191, 191));
 
@@ -122,8 +129,8 @@ public class STestTab extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jLayeredPane1.add(Task);
         Task.setBounds(0, 0, 970, 40);
-        jLayeredPane1.add(Task, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         Title.setBackground(new java.awt.Color(93, 91, 87));
         Title.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -145,19 +152,22 @@ public class STestTab extends javax.swing.JFrame {
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Admin Profile.png"))); // NOI18N
         Title.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 10, 50, 60));
 
-        jLabel9.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("John Doe");
-        Title.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
+        label_username.setFont(new java.awt.Font("Lucida Sans", 1, 14)); // NOI18N
+        label_username.setForeground(new java.awt.Color(255, 255, 255));
+        label_username.setText("John Doe");
+        Title.add(label_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 30, 100, -1));
 
+        jLayeredPane1.add(Title);
         Title.setBounds(0, 40, 970, 80);
-        jLayeredPane1.add(Title, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         NavBar.setBackground(new java.awt.Color(93, 91, 87));
         NavBar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Panel1.setBackground(new java.awt.Color(132, 131, 113));
         Panel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel1MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel1MousePressed(evt);
             }
@@ -255,6 +265,9 @@ public class STestTab extends javax.swing.JFrame {
 
         Panel4.setBackground(new java.awt.Color(93, 91, 87));
         Panel4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel4MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel4MousePressed(evt);
             }
@@ -290,6 +303,9 @@ public class STestTab extends javax.swing.JFrame {
         Panel5.setBackground(new java.awt.Color(93, 91, 87));
         Panel5.setAlignmentX(0.0F);
         Panel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Panel5MouseClicked(evt);
+            }
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 Panel5MousePressed(evt);
             }
@@ -322,8 +338,8 @@ public class STestTab extends javax.swing.JFrame {
 
         NavBar.add(Panel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 230, 60));
 
+        jLayeredPane1.add(NavBar);
         NavBar.setBounds(0, 120, 240, 580);
-        jLayeredPane1.add(NavBar, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         Body.setBackground(new java.awt.Color(255, 255, 255));
         Body.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -354,10 +370,25 @@ public class STestTab extends javax.swing.JFrame {
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/admin/Icon Prepare.png"))); // NOI18N
         jButton3.setText("Prepare");
         jButton3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
-        jComboBox2.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Accuracy Testing", "Success  Rate Testing", "Hypothesis Testing", " ", " " }));
-        jComboBox2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        combo_test.setFont(new java.awt.Font("Lucida Sans", 1, 12)); // NOI18N
+        combo_test.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Accuracy Testing", "Success  Rate Testing ", "Hypothesis Testing", " ", " " }));
+        combo_test.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        combo_test.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                combo_testMouseClicked(evt);
+            }
+        });
+        combo_test.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                combo_testActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -366,7 +397,7 @@ public class STestTab extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap(47, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(combo_test, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(jPanel4Layout.createSequentialGroup()
                             .addComponent(jTextField1)
@@ -381,7 +412,7 @@ public class STestTab extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(combo_test, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -439,20 +470,29 @@ public class STestTab extends javax.swing.JFrame {
 
         jPanel7.setBackground(new java.awt.Color(255, 255, 255));
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        interpretationTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {"81% - 100%", "Mostly Accurate"},
+                {"61% - 80%", "Frequently Accurate"},
+                {"41% - 60%", "Agreeably Accurate"},
+                {"21% - 40%", "Rarely Accurate"},
+                {"0% - 20%", "Poorly Accurate"}
+            },
+            new String [] {
+                "Result", "Interpretation"
+            }
+        ));
+        jScrollPane1.setViewportView(interpretationTable);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
         );
 
         ImagePrev.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 35, 230, 220));
@@ -464,8 +504,8 @@ public class STestTab extends javax.swing.JFrame {
 
         Body.add(ImagePrev, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 10, 240, 260));
 
+        jLayeredPane1.add(Body);
         Body.setBounds(240, 120, 718, 574);
-        jLayeredPane1.add(Body, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jPanel2.setBackground(new java.awt.Color(93, 91, 87));
 
@@ -480,13 +520,13 @@ public class STestTab extends javax.swing.JFrame {
             .addGap(0, 3, Short.MAX_VALUE)
         );
 
+        jLayeredPane1.add(jPanel2);
         jPanel2.setBounds(240, 695, 720, 3);
-        jLayeredPane1.add(jPanel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         jPanel1.setBackground(new java.awt.Color(93, 91, 87));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jLayeredPane1.add(jPanel1);
         jPanel1.setBounds(959, 120, 3, 580);
-        jLayeredPane1.add(jPanel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -522,6 +562,58 @@ public class STestTab extends javax.swing.JFrame {
         new DPrepTab().setVisible(true);
     }//GEN-LAST:event_Panel1MousePressed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        ModelTesting model = new ModelTesting();
+        model.ModelTest(combo_test.getSelectedIndex(), jComboBox1.getSelectedIndex(), jTextArea2);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void Panel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel1MouseClicked
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_Panel1MouseClicked
+
+    private void Panel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel4MouseClicked
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_Panel4MouseClicked
+
+    private void Panel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel5MouseClicked
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_Panel5MouseClicked
+
+    private void combo_testMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_combo_testMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_combo_testMouseClicked
+
+    private void combo_testActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combo_testActionPerformed
+        // TODO add your handling code here:
+        clear_table();
+        
+        combo x = new combo();           
+        int loc = x.selectcombo_stest(combo_test.getSelectedItem().toString());        
+        read_int y = new read_int();   
+        
+        if(loc == 1){
+            clear_table();
+        }else if(loc == 0 || loc == 2){
+            ArrayList<String[]> al = new ArrayList<String[]>();
+            al = y.r_interp(loc);       
+
+            DefaultTableModel model = (DefaultTableModel)interpretationTable.getModel();                
+            Object[] row = new Object[2];
+            for(int i = 0; i < al.size(); i++){
+                String[] myString = new String[2];
+                myString=al.get(i);
+                for(int j=0; j < myString.length;j++){
+                    row[j] = myString[j];
+                }
+                model.addRow(row);
+            } 
+        }
+    }//GEN-LAST:event_combo_testActionPerformed
+
+    public void clear_table(){
+        DefaultTableModel model = (DefaultTableModel)interpretationTable.getModel();
+        model.setRowCount(0);
+    }
     
     void setColor (JPanel a, JPanel b)
     {
@@ -589,11 +681,12 @@ public class STestTab extends javax.swing.JFrame {
     private javax.swing.JPanel Summary;
     private javax.swing.JPanel Task;
     private javax.swing.JPanel Title;
+    private javax.swing.JComboBox combo_test;
+    private javax.swing.JTable interpretationTable;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -612,17 +705,16 @@ public class STestTab extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel label_username;
     // End of variables declaration//GEN-END:variables
 }
